@@ -5,8 +5,8 @@ from app.config import DATABASE_URL
 
 # Thread-safe connection pool for concurrent requests
 connection_pool = pool.ThreadedConnectionPool(
-    minconn=1,
-    maxconn=20,
+    minconn=5,
+    maxconn=40,
     dsn=DATABASE_URL
 )
 
@@ -41,6 +41,11 @@ def init_db():
     """)
     
     cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_ledger_account_entry
+        ON ledger_entries (account_id, id)
+    """)
+    
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS account_snapshots (
             id SERIAL PRIMARY KEY,
             account_id INT REFERENCES accounts(id),
@@ -65,3 +70,7 @@ def get_db():
         raise
     finally:
         connection_pool.putconn(conn)
+
+def close_pool():
+    """Gracefully close all connections in the pool."""
+    connection_pool.closeall()

@@ -31,10 +31,15 @@ balance = snapshot.balance_cents + SUM(entries WHERE id > snapshot.last_entry_id
 
 This reduces balance queries from O(N) to O(k) where k = new transactions since last snapshot.
 
-**Benchmark Results (20,000 transactions):**
-- Before snapshot: 7.352 ms average
-- After snapshot: 5.483 ms average
-- Improvement: 25.4% faster (1.3x speedup)
+**Benchmark Results (20,000 initial entries + 50 delta entries):**
+```
+Metric                    Raw SUM         Snapshot + Delta     Improvement
+----------------------------------------------------------------------
+Transactions              20000           50
+Average Latency           2.654 ms        0.352 ms            86.8%
+P99 Latency               6.699 ms        0.780 ms            88.3%
+Speedup Factor            -               7.55x
+```
 
 Run benchmark: `PYTHONPATH=. python scripts/benchmark.py`
 

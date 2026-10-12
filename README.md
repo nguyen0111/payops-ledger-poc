@@ -1,5 +1,7 @@
 # PayOps Platform (Core Ledger & Reconciliation POC)
 
+[![CI Tests](https://github.com/nguyen0111/payops-ledger-poc/actions/workflows/test.yml/badge.svg)](https://github.com/nguyen0111/payops-ledger-poc/actions/workflows/test.yml)
+
 A learning PoC exploring financial ledger immutability, concurrency locking (PostgreSQL SELECT ... FOR UPDATE), and streaming bank reconciliation.
 
 ## Problem Statement
@@ -72,6 +74,9 @@ pip install -r requirements.txt
 
 # Run tests
 pytest -v
+
+# Run automated benchmark (demonstrating 7.55x speedup)
+python scripts/benchmark.py
 
 # Start server
 uvicorn app.main:app --reload

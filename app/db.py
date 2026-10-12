@@ -1,6 +1,14 @@
 import psycopg2
+from psycopg2 import pool
 from contextlib import contextmanager
 from app.config import DATABASE_URL
+
+# Thread-safe connection pool for concurrent requests
+connection_pool = pool.ThreadedConnectionPool(
+    minconn=1,
+    maxconn=20,
+    dsn=DATABASE_URL
+)
 
 def init_db():
     conn = psycopg2.connect(DATABASE_URL)
@@ -47,7 +55,7 @@ def init_db():
 
 @contextmanager
 def get_db():
-    conn = psycopg2.connect(DATABASE_URL)
+    conn = connection_pool.getconn()
     conn.autocommit = False
     try:
         yield conn
@@ -56,4 +64,4 @@ def get_db():
         conn.rollback()
         raise
     finally:
-        conn.close()
+        connection_pool.putconn(conn)

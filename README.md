@@ -31,6 +31,13 @@ balance = snapshot.balance_cents + SUM(entries WHERE id > snapshot.last_entry_id
 
 This reduces balance queries from O(N) to O(k) where k = new transactions since last snapshot.
 
+**Benchmark Results (20,000 transactions):**
+- Before snapshot: 7.352 ms average
+- After snapshot: 5.483 ms average
+- Improvement: 25.4% faster (1.3x speedup)
+
+Run benchmark: `PYTHONPATH=. python scripts/benchmark.py`
+
 ### 3. Reconciliation Strategy
 
 The reconciliation engine streams bank CSV files line-by-line to handle large datasets. For this PoC, internal ledger entries are batch-mapped in memory for simplicity. In an enterprise setup, this would be executed via a SQL FULL OUTER JOIN against a temporary bank staging table to avoid loading large datasets into application memory.

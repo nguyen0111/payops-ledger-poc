@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, Header
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from app.ledger import create_transfer, get_balance, create_snapshot
 from app.reconcile import generate_mock_bank_statement, run_reconciliation
@@ -9,7 +9,7 @@ app = FastAPI()
 class TransferRequest(BaseModel):
     from_acc: Optional[int] = None
     to_acc: int
-    amount_cents: int
+    amount_cents: int = Field(..., gt=0, description="Amount in cents, must be > 0")
 
 @app.post("/api/v1/transfers")
 def transfer(request: TransferRequest, idempotency_key: str = Header(..., alias="Idempotency-Key")):

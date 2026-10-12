@@ -27,3 +27,23 @@ def test_insufficient_funds():
     
     assert get_balance(alice) == 1000
     assert get_balance(bob) == 0
+
+def test_negative_amount_rejected():
+    alice = create_account("eve_edge")
+    bob = create_account("frank_edge")
+    
+    with pytest.raises(ValueError, match="Transfer amount must be strictly positive"):
+        create_transfer("transfer-negative", alice, bob, -1000)
+    
+    with pytest.raises(ValueError, match="Transfer amount must be strictly positive"):
+        create_transfer("transfer-zero", alice, bob, 0)
+
+def test_self_transfer_rejected():
+    alice = create_account("grace_edge")
+    
+    create_transfer("deposit-003", None, alice, 5000)
+    
+    with pytest.raises(ValueError, match="Cannot transfer to the same account"):
+        create_transfer("self-transfer", alice, alice, 1000)
+    
+    assert get_balance(alice) == 5000

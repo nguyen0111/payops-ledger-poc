@@ -31,6 +31,13 @@ def get_balance(account_id):
             return row[0]
 
 def create_transfer(idempotency_key, from_acc, to_acc, amount_cents):
+    # Validate edge cases
+    if amount_cents <= 0:
+        raise ValueError("Transfer amount must be strictly positive")
+    
+    if from_acc is not None and from_acc == to_acc:
+        raise ValueError("Cannot transfer to the same account")
+    
     with get_db() as conn:
         cursor = conn.cursor()
         

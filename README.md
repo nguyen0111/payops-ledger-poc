@@ -1,6 +1,6 @@
 # PayOps Platform (Core Ledger & Reconciliation POC)
 
-[![CI Tests](https://github.com/nguyen0111/payops-ledger-poc/actions/workflows/test.yml/badge.svg)](https://github.com/nguyen0111/payops-ledger-poc/actions/workflows/test.yml)
+[![Release Pipeline](https://github.com/nguyen0111/payops-ledger-poc/actions/workflows/release.yml/badge.svg)](https://github.com/nguyen0111/payops-ledger-poc/actions/workflows/release.yml)
 
 A learning PoC exploring financial ledger immutability, concurrency locking (PostgreSQL SELECT ... FOR UPDATE), and streaming bank reconciliation.
 
@@ -92,13 +92,19 @@ The application is containerized with security best practices:
 - **Slim image footprint**: Based on `python:3.10-slim` for minimal attack surface
 - **Automated security scanning**: Trivy scans for CRITICAL/HIGH vulnerabilities on every release
 
+Since PostgreSQL runs on the host machine, the container needs `host.docker.internal` to reach the database on macOS/Windows.
+
+**Note:** Replace `<your_postgres_user>` and `<your_password>` with your actual PostgreSQL credentials. On macOS with Homebrew default installation, use your macOS username (no password by default).
+
 ```bash
 # Pull the latest image from GitHub Container Registry
 docker pull ghcr.io/nguyen0111/payops-ledger-poc:latest
 
-# Run the container (requires PostgreSQL connection)
-docker run -p 8000:8000 \
-  -e DATABASE_URL=postgresql://user:pass@host:5432/db \
+# Run container locally connected to host PostgreSQL
+docker run -d -p 8000:8000 \
+  -e DATABASE_URL="postgresql://<your_postgres_user>:<your_password>@host.docker.internal:5432/payops_db" \
+  --name payops-api \
+  --rm \
   ghcr.io/nguyen0111/payops-ledger-poc:latest
 ```
 
@@ -107,6 +113,13 @@ docker run -p 8000:8000 \
 ```bash
 # Build the image
 docker build -t payops-ledger:local .
+
+# Run container locally connected to host PostgreSQL
+docker run -d -p 8000:8000 \
+  -e DATABASE_URL="postgresql://<your_postgres_user>:<your_password>@host.docker.internal:5432/payops_db" \
+  --name payops-api \
+  --rm \
+  payops-ledger:local
 
 # Run locally
 docker run -p 8000:8000 payops-ledger:local

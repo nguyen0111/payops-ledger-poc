@@ -82,6 +82,38 @@ python scripts/benchmark.py
 uvicorn app.main:app --reload
 ```
 
+## Container Deployment
+
+### Pull and Run with Docker
+
+The application is containerized with security best practices:
+
+- **Non-root user execution**: Container runs as `appuser` (UID 10001) instead of root
+- **Slim image footprint**: Based on `python:3.10-slim` for minimal attack surface
+- **Automated security scanning**: Trivy scans for CRITICAL/HIGH vulnerabilities on every release
+
+```bash
+# Pull the latest image from GitHub Container Registry
+docker pull ghcr.io/nguyen0111/payops-ledger-poc:latest
+
+# Run the container (requires PostgreSQL connection)
+docker run -p 8000:8000 \
+  -e DATABASE_URL=postgresql://user:pass@host:5432/db \
+  ghcr.io/nguyen0111/payops-ledger-poc:latest
+```
+
+### Build Locally
+
+```bash
+# Build the image
+docker build -t payops-ledger:local .
+
+# Run locally
+docker run -p 8000:8000 payops-ledger:local
+```
+
+Image size: ~54MB (compressed)
+
 ## API Endpoints
 
 - `POST /api/v1/transfers` - Execute transfer with idempotency key

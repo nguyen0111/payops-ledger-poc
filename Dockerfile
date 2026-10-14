@@ -20,6 +20,9 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Remove build/packaging tools to eliminate CVEs in production image
+RUN pip uninstall -y pip setuptools wheel
+
 # Copy application code
 COPY --chown=appuser:appuser app/ ./app/
 

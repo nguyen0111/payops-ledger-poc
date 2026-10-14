@@ -1,5 +1,8 @@
 FROM python:3.10-slim
 
+# Update Debian OS packages to patch xz-utils CVE
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
+
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -14,9 +17,6 @@ WORKDIR /app
 
 # Copy requirements and install dependencies
 COPY requirements.txt .
-
-# Upgrade pip, setuptools, wheel to patch CVEs before installing dependencies
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 
 RUN pip install --no-cache-dir -r requirements.txt
 

@@ -90,7 +90,7 @@ The application is containerized with security best practices:
 
 - **Non-root user execution**: Container runs as `appuser` (UID 10001) instead of root
 - **Slim image footprint**: Based on `python:3.10-slim` for minimal attack surface
-- **Automated security scanning**: Trivy scans for CRITICAL/HIGH vulnerabilities on every release
+- **Automated security scanning**: Trivy vulnerability scanning gates every push to main (fails pipeline on fixable CRITICAL/HIGH CVEs)
 
 Since PostgreSQL runs on the host machine, the container needs `host.docker.internal` to reach the database on macOS/Windows.
 
